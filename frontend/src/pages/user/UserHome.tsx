@@ -25,8 +25,21 @@ export const UserHome = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({ queryKey: ['user-exams'], queryFn: examApi.list });
-  const exams: Exam[] = data?.data?.exams || [];
+  const { data, isLoading } = useQuery({
+    queryKey: ['user-exams'],
+    queryFn: examApi.list,
+    staleTime: 0,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+  });
+  const now = new Date();
+
+  // Filtro doble: servidor ya filtra por fecha, pero filtramos también en cliente
+  // para que exámenes vencidos nunca aparezcan aunque la caché esté desactualizada
+  const exams: Exam[] = (data?.data?.exams || []).filter(
+    (e: Exam) => new Date(e.end_datetime) > now
+  );
 
   const available = exams.filter((e) => !e.last_status || e.last_status === 'in_progress');
   const completed = exams.filter((e) => DONE_STATUSES.includes(e.last_status || ''));

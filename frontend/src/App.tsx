@@ -33,7 +33,8 @@ import { ExamResults } from './pages/user/ExamResults';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 30,
+      staleTime: 0,
+      refetchOnWindowFocus: true,
       retry: 1,
     },
   },
