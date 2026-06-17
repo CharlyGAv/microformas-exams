@@ -57,8 +57,18 @@ export const ExamForm = () => {
   }, [examData, reset]);
 
   const mutation = useMutation({
-    mutationFn: (data: ExamFormData) =>
-      isEdit ? examApi.update(id!, data as Record<string, unknown>) : examApi.create(data as Record<string, unknown>),
+    mutationFn: (data: ExamFormData) => {
+      // Convertir datetime-local (sin zona horaria) a ISO con offset local
+      // para que PostgreSQL almacene la hora correcta en vez de interpretarla como UTC
+      const payload = {
+        ...data,
+        start_datetime: new Date(data.start_datetime).toISOString(),
+        end_datetime:   new Date(data.end_datetime).toISOString(),
+      };
+      return isEdit
+        ? examApi.update(id!, payload as Record<string, unknown>)
+        : examApi.create(payload as Record<string, unknown>);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exams'] });
       toast.success(isEdit ? 'Examen actualizado' : 'Examen creado exitosamente');
