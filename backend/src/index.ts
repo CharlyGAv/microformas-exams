@@ -24,6 +24,7 @@ import reportRoutes from './routes/reports';
 import { setupSockets } from './sockets/examSocket';
 
 const app = express();
+app.set('trust proxy', 1); // Render/proxies: usar IP real del cliente
 const httpServer = createServer(app);
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_URL || 'http://localhost:5173';
