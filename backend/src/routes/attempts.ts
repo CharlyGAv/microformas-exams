@@ -5,6 +5,30 @@ import { authenticateJWT } from '../middleware/auth';
 const router = Router();
 router.use(authenticateJWT);
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function applyRandomization(
+  rows: Record<string, unknown>[],
+  randomizeQuestions: boolean,
+  randomizeOptions: boolean
+): Record<string, unknown>[] {
+  let questions = randomizeQuestions ? shuffle(rows) : rows;
+  if (randomizeOptions) {
+    questions = questions.map((q) => ({
+      ...q,
+      options: Array.isArray(q.options) ? shuffle(q.options as unknown[]) : q.options,
+    }));
+  }
+  return questions;
+}
+
 // POST /api/exams/:examId/start
 router.post('/exams/:examId/start', async (req: Request, res: Response) => {
   const { examId } = req.params;
@@ -54,7 +78,10 @@ router.post('/exams/:examId/start', async (req: Request, res: Response) => {
            WHERE q.exam_id = $1 GROUP BY q.id ORDER BY q.order_index`,
           [examId]
         );
-        return res.json({ attempt, exam, questions: questions.rows, remaining_seconds: remainingSeconds });
+        const orderedQuestions = applyRandomization(
+          questions.rows, exam.randomize_questions, exam.randomize_options
+        );
+        return res.json({ attempt, exam, questions: orderedQuestions, remaining_seconds: remainingSeconds });
       }
     }
 
@@ -75,11 +102,14 @@ router.post('/exams/:examId/start', async (req: Request, res: Response) => {
        WHERE q.exam_id = $1 GROUP BY q.id ORDER BY q.order_index`,
       [examId]
     );
+    const orderedQuestions = applyRandomization(
+      questions.rows, exam.randomize_questions, exam.randomize_options
+    );
 
     res.status(201).json({
       attempt,
       exam,
-      questions: questions.rows,
+      questions: orderedQuestions,
       remaining_seconds: exam.duration_minutes * 60,
     });
   } catch (err) {
