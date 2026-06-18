@@ -40,7 +40,7 @@ export const UserManagement = () => {
   };
 
   const updateMutation = useMutation({
-    mutationFn: (data: UserFormData) => userApi.update(editTarget!.id, data as Record<string, unknown>),
+    mutationFn: (data: UserFormData) => userApi.update(editTarget!.id, data as unknown as Record<string, unknown>),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Usuario actualizado');

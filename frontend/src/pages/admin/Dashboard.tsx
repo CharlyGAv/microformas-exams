@@ -245,7 +245,7 @@ export const Dashboard = () => {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard title="Exáms. Programados"   value={stats?.exams?.scheduled ?? '-'}       icon={<Clock size={20} />}        color="blue" />
-        <StatsCard title="Exáms. Finalizados"   value={stats?.exams?.finished ?? '-'}        icon={<FileText size={20} />}     color="gray" />
+        <StatsCard title="Exáms. Finalizados"   value={stats?.exams?.finished ?? '-'}        icon={<FileText size={20} />}     color="indigo" />
         <StatsCard title="Tasa de Aprobación"   value={stats?.approval_rate ? `${stats.approval_rate}%` : '-'} icon={<CheckCircle size={20} />} color="green" />
         <StatsCard title="Tasa de Reprobación"  value={stats?.fail_rate     ? `${stats.fail_rate}%`     : '-'} icon={<XCircle size={20} />}    color="red" />
       </div>

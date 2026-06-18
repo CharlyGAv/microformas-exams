@@ -102,13 +102,13 @@ export const QuestionBank = () => {
   };
 
   const createMutation = useMutation({
-    mutationFn: (data: QuestionFormData) => examApi.createQuestion(examId!, data as Record<string, unknown>),
+    mutationFn: (data: QuestionFormData) => examApi.createQuestion(examId!, data as unknown as Record<string, unknown>),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['questions', examId] }); toast.success('Pregunta creada'); setShowModal(false); },
     onError: () => toast.error('Error al crear pregunta'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: QuestionFormData) => examApi.updateQuestion(examId!, editing!.id, data as Record<string, unknown>),
+    mutationFn: (data: QuestionFormData) => examApi.updateQuestion(examId!, editing!.id, data as unknown as Record<string, unknown>),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['questions', examId] }); toast.success('Pregunta actualizada'); setShowModal(false); },
     onError: () => toast.error('Error al actualizar pregunta'),
   });
