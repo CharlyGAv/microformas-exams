@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Clock } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -7,24 +7,42 @@ interface TimerProps {
   onTimeUp: () => void;
   label?: string;
   size?: 'sm' | 'lg';
-  warning?: number; // seconds threshold for warning color
+  warning?: number;
 }
 
 export const Timer = ({ totalSeconds, onTimeUp, label = 'Tiempo restante', size = 'lg', warning = 300 }: TimerProps) => {
   const [remaining, setRemaining] = useState(totalSeconds);
+  const onTimeUpRef = useRef(onTimeUp);
+  const firedRef = useRef(false);
 
+  // Keep callback ref fresh without re-running interval
+  useEffect(() => { onTimeUpRef.current = onTimeUp; });
+
+  // Reset when totalSeconds changes (new question via key remount)
   useEffect(() => {
     setRemaining(totalSeconds);
+    firedRef.current = false;
   }, [totalSeconds]);
 
+  // Single stable interval — only restarts when totalSeconds changes
   useEffect(() => {
-    if (remaining <= 0) {
-      onTimeUp();
-      return;
-    }
-    const interval = setInterval(() => setRemaining((s) => s - 1), 1000);
-    return () => clearInterval(interval);
-  }, [remaining, onTimeUp]);
+    firedRef.current = false;
+    const id = setInterval(() => {
+      setRemaining((s) => {
+        if (s <= 1) {
+          clearInterval(id);
+          if (!firedRef.current) {
+            firedRef.current = true;
+            // Defer to avoid calling setState during render
+            setTimeout(() => onTimeUpRef.current(), 0);
+          }
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [totalSeconds]);
 
   const format = useCallback((secs: number) => {
     const h = Math.floor(secs / 3600);

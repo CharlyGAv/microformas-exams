@@ -144,11 +144,15 @@ export const ExamRoom = () => {
       });
     }
 
-    // Auto-advance on time expired
-    if (timeExpired && currentIdx < questions.length - 1) {
-      setTimeout(() => setCurrentIdx((i) => i + 1), 1500);
+    // Auto-advance o auto-submit cuando expira el tiempo de la pregunta
+    if (timeExpired) {
+      if (currentIdx < questions.length - 1) {
+        setTimeout(() => setCurrentIdx((i) => i + 1), 1500);
+      } else {
+        setTimeout(() => handleAutoSubmit(), 1500);
+      }
     }
-  }, [attempt, currentIdx, questions.length, answerMutation]);
+  }, [attempt, currentIdx, questions.length, answerMutation, handleAutoSubmit]);
 
   const doSubmit = useCallback(() => {
     if (submitting || !attempt) return;
