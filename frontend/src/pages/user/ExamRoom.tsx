@@ -436,26 +436,27 @@ export const ExamRoom = () => {
                     <p className="text-red-500 text-sm text-center mb-3">Debes responder esta pregunta antes de continuar.</p>
                   )}
                   <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => handleNavigate(currentIdx - 1)}
-                    disabled={currentIdx === 0}
-                    className="btn-secondary disabled:opacity-40"
-                  >
-                    <ChevronLeft size={16} /> Anterior
-                  </button>
-                  {currentIdx < questions.length - 1 ? (
-                    <button onClick={handleNext} className="btn-primary">
-                      Siguiente <ChevronRight size={16} />
-                    </button>
-                  ) : (
                     <button
-                      onClick={() => setShowSubmitConfirm(true)}
-                      className="btn-primary bg-green-600 hover:bg-green-700"
-                      disabled={submitting}
+                      onClick={() => handleNavigate(currentIdx - 1)}
+                      disabled={currentIdx === 0}
+                      className="btn-secondary disabled:opacity-40"
                     >
-                      <Send size={16} /> Finalizar examen
+                      <ChevronLeft size={16} /> Anterior
                     </button>
-                  )}
+                    {currentIdx < questions.length - 1 ? (
+                      <button onClick={handleNext} className="btn-primary">
+                        Siguiente <ChevronRight size={16} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setShowSubmitConfirm(true)}
+                        className="btn-primary bg-green-600 hover:bg-green-700"
+                        disabled={submitting}
+                      >
+                        <Send size={16} /> Finalizar examen
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (
