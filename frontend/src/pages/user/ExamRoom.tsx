@@ -428,6 +428,7 @@ export const ExamRoom = () => {
             {currentQuestion ? (
               <div className="card p-7">
                 <QuestionCard
+                  key={currentQuestion.id}
                   question={currentQuestion}
                   index={currentIdx}
                   total={questions.length}
