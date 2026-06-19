@@ -170,18 +170,26 @@ export const ExamRoom = () => {
   const progress = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
   const currentQuestion = questions[currentIdx];
 
-  const handleNext = useCallback(() => {
-    const a = answers[currentQuestion?.id];
-    let isAnswered = true;
-    if (currentQuestion) {
-      if (!a) { isAnswered = false; }
-      else if (currentQuestion.question_type === 'open_text') { isAnswered = !!(a.openText?.trim()); }
-      else { isAnswered = a.selectedIds.length > 0; }
+  const isQuestionAnswered = useCallback((q: Question | undefined) => {
+    if (!q) return true;
+    const a = answers[q.id];
+    if (!a) return false;
+    if (q.question_type === 'open_text') return !!(a.openText?.trim());
+    return a.selectedIds.length > 0;
+  }, [answers]);
+
+  const handleNavigate = useCallback((targetIdx: number) => {
+    if (targetIdx > currentIdx && !isQuestionAnswered(currentQuestion)) {
+      setShowAnswerRequired(true);
+      return;
     }
-    if (!isAnswered) { setShowAnswerRequired(true); return; }
     setShowAnswerRequired(false);
-    setCurrentIdx((i) => i + 1);
-  }, [answers, currentQuestion]);
+    setCurrentIdx(targetIdx);
+  }, [currentIdx, currentQuestion, isQuestionAnswered]);
+
+  const handleNext = useCallback(() => {
+    handleNavigate(currentIdx + 1);
+  }, [handleNavigate, currentIdx]);
 
   // ── Pantalla de examen completado ──────────────────────────────────────────
   if (completed) {
@@ -384,7 +392,7 @@ export const ExamRoom = () => {
                 {questions.map((q, i) => (
                   <button
                     key={q.id}
-                    onClick={() => setCurrentIdx(i)}
+                    onClick={() => handleNavigate(i)}
                     className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${
                       i === currentIdx
                         ? 'bg-brand-600 text-white'
@@ -429,7 +437,7 @@ export const ExamRoom = () => {
                   )}
                   <div className="flex items-center justify-between">
                   <button
-                    onClick={() => { setShowAnswerRequired(false); setCurrentIdx((i) => Math.max(0, i - 1)); }}
+                    onClick={() => handleNavigate(currentIdx - 1)}
                     disabled={currentIdx === 0}
                     className="btn-secondary disabled:opacity-40"
                   >
