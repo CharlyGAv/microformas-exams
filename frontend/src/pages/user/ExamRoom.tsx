@@ -174,6 +174,7 @@ export const ExamRoom = () => {
     if (!q) return true;
     const a = answers[q.id];
     if (!a) return false;
+    if (a.timeExpired) return true;
     if (q.question_type === 'open_text') return !!(a.openText?.trim());
     return a.selectedIds.length > 0;
   }, [answers]);
