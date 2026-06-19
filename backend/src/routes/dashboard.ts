@@ -44,24 +44,24 @@ router.get('/stats', async (req: Request, res: Response) => {
     const [exams, users, attempts, activeSessions, avgScore, approvalRate] = await Promise.all([
       query(`SELECT
         COUNT(*) FILTER (WHERE is_active = true AND NOW() BETWEEN start_datetime AND end_datetime) AS active,
-        COUNT(*) FILTER (WHERE start_datetime > NOW()) AS scheduled,
-        COUNT(*) FILTER (WHERE end_datetime < NOW()) AS finished,
+        COUNT(*) FILTER (WHERE start_datetime > NOW() AND is_active = true) AS scheduled,
+        COUNT(*) FILTER (WHERE end_datetime < NOW() OR is_active = false) AS finished,
         COUNT(*) AS total
        FROM exams`),
       query(`SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE is_active=true) AS active FROM users WHERE 1=1 ${uw}`),
       query(`SELECT
         COUNT(*) FILTER (WHERE ea.status = 'in_progress' ${ec} ${uc}) AS in_progress,
-        COUNT(*) FILTER (WHERE ea.status = 'submitted' ${ec} ${uc}) AS submitted,
+        COUNT(*) FILTER (WHERE ea.status IN ('submitted','auto_submitted','timed_out') ${ec} ${uc}) AS submitted,
         COUNT(*) AS total
        FROM exam_attempts ea WHERE 1=1 ${ec} ${uc}`),
       query(`SELECT COUNT(*) AS connected FROM active_sessions s
              WHERE s.last_seen > NOW() - INTERVAL '5 minutes'
              ${userCond(cobertura, gerente, 's')}`),
-      query(`SELECT ROUND(AVG(ea.score), 2) AS avg FROM exam_attempts ea WHERE ea.status = 'submitted' ${ec} ${uc}`),
+      query(`SELECT ROUND(AVG(ea.score), 2) AS avg FROM exam_attempts ea WHERE ea.status IN ('submitted','auto_submitted','timed_out') ${ec} ${uc}`),
       query(`SELECT
         ROUND(100.0 * COUNT(*) FILTER (WHERE ea.passed = true) / NULLIF(COUNT(*), 0), 2) AS approval_rate,
         ROUND(100.0 * COUNT(*) FILTER (WHERE ea.passed = false) / NULLIF(COUNT(*), 0), 2) AS fail_rate
-       FROM exam_attempts ea WHERE ea.status = 'submitted' ${ec} ${uc}`),
+       FROM exam_attempts ea WHERE ea.status IN ('submitted','auto_submitted','timed_out') ${ec} ${uc}`),
     ]);
 
     res.json({
@@ -91,7 +91,7 @@ router.get('/results-by-exam', async (req: Request, res: Response) => {
         COUNT(*) FILTER (WHERE ea.passed = true) AS passed,
         COUNT(*) FILTER (WHERE ea.passed = false) AS failed
       FROM exam_attempts ea JOIN exams e ON ea.exam_id = e.id
-      WHERE ea.status = 'submitted' ${ec} ${uc}
+      WHERE ea.status IN ('submitted','auto_submitted','timed_out') ${ec} ${uc}
       GROUP BY e.id, e.title ORDER BY e.title
     `);
     res.json({ data: result.rows });
@@ -111,7 +111,7 @@ router.get('/results-by-area', async (req: Request, res: Response) => {
         COUNT(*) AS total,
         COUNT(*) FILTER (WHERE ea.passed = true) AS passed
       FROM exam_attempts ea JOIN users u ON ea.user_id = u.id
-      WHERE ea.status = 'submitted' AND u.area IS NOT NULL ${ec} ${uc}
+      WHERE ea.status IN ('submitted','auto_submitted','timed_out') AND u.area IS NOT NULL ${ec} ${uc}
       GROUP BY u.area ORDER BY avg_score DESC
     `);
     res.json({ data: result.rows });
@@ -133,7 +133,7 @@ router.get('/results-by-month', async (req: Request, res: Response) => {
         ROUND(AVG(ea.score), 2) AS avg_score,
         COUNT(*) FILTER (WHERE ea.passed = true) AS passed
       FROM exam_attempts ea
-      WHERE ea.status = 'submitted' AND ea.submitted_at > NOW() - INTERVAL '12 months' ${ec} ${uc}
+      WHERE ea.status IN ('submitted','auto_submitted','timed_out') AND ea.submitted_at > NOW() - INTERVAL '12 months' ${ec} ${uc}
       GROUP BY 1, 2 ORDER BY 1
     `);
     res.json({ data: result.rows });
@@ -151,12 +151,12 @@ router.get('/top-scores', async (req: Request, res: Response) => {
       query(`
         SELECT u.name, u.area, u.cobertura, u.gerente, ea.score, e.title AS exam
         FROM exam_attempts ea JOIN users u ON ea.user_id = u.id JOIN exams e ON ea.exam_id = e.id
-        WHERE ea.status = 'submitted' ${ec} ${uc} ORDER BY ea.score DESC LIMIT 10
+        WHERE ea.status IN ('submitted','auto_submitted','timed_out') ${ec} ${uc} ORDER BY ea.score DESC LIMIT 10
       `),
       query(`
         SELECT u.name, u.area, u.cobertura, u.gerente, ea.score, e.title AS exam
         FROM exam_attempts ea JOIN users u ON ea.user_id = u.id JOIN exams e ON ea.exam_id = e.id
-        WHERE ea.status = 'submitted' ${ec} ${uc} ORDER BY ea.score ASC LIMIT 10
+        WHERE ea.status IN ('submitted','auto_submitted','timed_out') ${ec} ${uc} ORDER BY ea.score ASC LIMIT 10
       `),
     ]);
     res.json({ top: top.rows, bottom: bottom.rows });
@@ -196,7 +196,7 @@ router.get('/results-by-cobertura', async (req: Request, res: Response) => {
         COUNT(*) FILTER (WHERE ea.passed = true) AS passed,
         COUNT(*) FILTER (WHERE ea.passed = false) AS failed
       FROM exam_attempts ea JOIN users u ON ea.user_id = u.id
-      WHERE ea.status = 'submitted' AND u.cobertura IS NOT NULL ${ec} ${uc}
+      WHERE ea.status IN ('submitted','auto_submitted','timed_out') AND u.cobertura IS NOT NULL ${ec} ${uc}
       GROUP BY u.cobertura ORDER BY avg_score DESC
     `);
     res.json({ data: result.rows });
@@ -217,7 +217,7 @@ router.get('/results-by-gerente', async (req: Request, res: Response) => {
         COUNT(*) FILTER (WHERE ea.passed = true) AS passed,
         COUNT(*) FILTER (WHERE ea.passed = false) AS failed
       FROM exam_attempts ea JOIN users u ON ea.user_id = u.id
-      WHERE ea.status = 'submitted' AND u.gerente IS NOT NULL ${ec} ${uc}
+      WHERE ea.status IN ('submitted','auto_submitted','timed_out') AND u.gerente IS NOT NULL ${ec} ${uc}
       GROUP BY u.gerente ORDER BY avg_score DESC
     `);
     res.json({ data: result.rows });
