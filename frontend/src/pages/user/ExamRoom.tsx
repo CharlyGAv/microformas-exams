@@ -169,6 +169,22 @@ export const ExamRoom = () => {
   const progress = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
   const currentQuestion = questions[currentIdx];
 
+  const isCurrentAnswered = (() => {
+    if (!currentQuestion) return true;
+    const a = answers[currentQuestion.id];
+    if (!a) return false;
+    if (currentQuestion.question_type === 'open_text') return !!(a.openText?.trim());
+    return a.selectedIds.length > 0;
+  })();
+
+  const [showAnswerRequired, setShowAnswerRequired] = useState(false);
+
+  const handleNext = () => {
+    if (!isCurrentAnswered) { setShowAnswerRequired(true); return; }
+    setShowAnswerRequired(false);
+    setCurrentIdx((i) => i + 1);
+  };
+
   // ── Pantalla de examen completado ──────────────────────────────────────────
   if (completed) {
     const passed = completed.passed;
@@ -409,16 +425,20 @@ export const ExamRoom = () => {
                 />
 
                 {/* Navigation */}
-                <div className="flex items-center justify-between mt-8 pt-5 border-t border-gray-100 dark:border-gray-800">
+                <div className="mt-8 pt-5 border-t border-gray-100 dark:border-gray-800">
+                  {showAnswerRequired && (
+                    <p className="text-red-500 text-sm text-center mb-3">Debes responder esta pregunta antes de continuar.</p>
+                  )}
+                  <div className="flex items-center justify-between">
                   <button
-                    onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
+                    onClick={() => { setShowAnswerRequired(false); setCurrentIdx((i) => Math.max(0, i - 1)); }}
                     disabled={currentIdx === 0}
                     className="btn-secondary disabled:opacity-40"
                   >
                     <ChevronLeft size={16} /> Anterior
                   </button>
                   {currentIdx < questions.length - 1 ? (
-                    <button onClick={() => setCurrentIdx((i) => i + 1)} className="btn-primary">
+                    <button onClick={handleNext} className="btn-primary">
                       Siguiente <ChevronRight size={16} />
                     </button>
                   ) : (
