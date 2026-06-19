@@ -45,7 +45,7 @@ router.get('/stats', async (req: Request, res: Response) => {
       query(`SELECT
         COUNT(*) FILTER (WHERE is_active = true AND NOW() BETWEEN start_datetime AND end_datetime) AS active,
         COUNT(*) FILTER (WHERE start_datetime > NOW() AND is_active = true) AS scheduled,
-        COUNT(*) FILTER (WHERE end_datetime < NOW() OR is_active = false) AS finished,
+        (SELECT COUNT(DISTINCT ea.exam_id) FROM exam_attempts ea WHERE ea.status IN ('submitted','auto_submitted','timed_out')) AS finished,
         COUNT(*) AS total
        FROM exams`),
       query(`SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE is_active=true) AS active FROM users WHERE 1=1 ${uw}`),
