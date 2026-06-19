@@ -31,6 +31,7 @@ export const ExamRoom = () => {
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showAnswerRequired, setShowAnswerRequired] = useState(false);
   const [completed, setCompleted] = useState<{ score: number; passed: boolean } | null>(null);
   const [countdown, setCountdown] = useState(8);
   const socket = useRef(getSocket());
@@ -169,21 +170,18 @@ export const ExamRoom = () => {
   const progress = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
   const currentQuestion = questions[currentIdx];
 
-  const isCurrentAnswered = (() => {
-    if (!currentQuestion) return true;
-    const a = answers[currentQuestion.id];
-    if (!a) return false;
-    if (currentQuestion.question_type === 'open_text') return !!(a.openText?.trim());
-    return a.selectedIds.length > 0;
-  })();
-
-  const [showAnswerRequired, setShowAnswerRequired] = useState(false);
-
-  const handleNext = () => {
-    if (!isCurrentAnswered) { setShowAnswerRequired(true); return; }
+  const handleNext = useCallback(() => {
+    const a = answers[currentQuestion?.id];
+    let isAnswered = true;
+    if (currentQuestion) {
+      if (!a) { isAnswered = false; }
+      else if (currentQuestion.question_type === 'open_text') { isAnswered = !!(a.openText?.trim()); }
+      else { isAnswered = a.selectedIds.length > 0; }
+    }
+    if (!isAnswered) { setShowAnswerRequired(true); return; }
     setShowAnswerRequired(false);
     setCurrentIdx((i) => i + 1);
-  };
+  }, [answers, currentQuestion]);
 
   // ── Pantalla de examen completado ──────────────────────────────────────────
   if (completed) {
