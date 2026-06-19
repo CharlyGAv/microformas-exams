@@ -9,7 +9,7 @@ interface QuestionCardProps {
   index: number;
   total: number;
   onAnswer: (questionId: string, selectedIds: string[], openText?: string, timeExpired?: boolean) => void;
-  savedAnswer?: { selectedIds: string[]; openText?: string };
+  savedAnswer?: { selectedIds: string[]; openText?: string; timeExpired?: boolean };
 }
 
 const typeIcons = {
@@ -36,8 +36,8 @@ export const QuestionCard = ({ question, index, total, onAnswer, savedAnswer }: 
   useEffect(() => {
     setSelectedIds(savedAnswer?.selectedIds || []);
     setOpenText(savedAnswer?.openText || '');
-    setTimeExpired(false);
-  }, [question.id, savedAnswer?.selectedIds, savedAnswer?.openText]);
+    setTimeExpired(savedAnswer?.timeExpired ?? false);
+  }, [question.id, savedAnswer?.selectedIds, savedAnswer?.openText, savedAnswer?.timeExpired]);
 
   const TypeIcon = typeIcons[question.question_type];
 
@@ -89,6 +89,7 @@ export const QuestionCard = ({ question, index, total, onAnswer, savedAnswer }: 
         {question.time_limit_seconds && !timeExpired && (
           <div className="flex-shrink-0">
             <Timer
+              key={question.id}
               totalSeconds={question.time_limit_seconds}
               onTimeUp={handleTimeUp}
               label="Tiempo pregunta"
