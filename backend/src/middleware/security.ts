@@ -3,20 +3,20 @@ import rateLimit from 'express-rate-limit';
 
 // ─── Rate limiters ────────────────────────────────────────────────────────────
 
-/** Límite general para toda la API: 200 req / 15 min por IP */
+/** Límite general para toda la API: 1000 req / 15 min por IP */
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiadas solicitudes, intenta de nuevo más tarde.' },
   skip: (req) => req.path === '/health',
 });
 
-/** Límite estricto para rutas de autenticación: 20 req / 15 min por IP */
+/** Límite para rutas de autenticación: 50 req / 15 min por IP */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 50,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiados intentos de autenticación, intenta de nuevo en 15 minutos.' },
