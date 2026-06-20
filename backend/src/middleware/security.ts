@@ -3,20 +3,13 @@ import rateLimit from 'express-rate-limit';
 
 // ─── Rate limiters ────────────────────────────────────────────────────────────
 
-/** Límite general para toda la API: 1000 req / 15 min por IP */
-export const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 1000,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Demasiadas solicitudes, intenta de nuevo más tarde.' },
-  skip: (req) => req.path === '/health',
-});
+/** Sin límite general — app corporativa interna, acceso solo via Google OAuth @microformas.com.mx */
+export const generalLimiter = (_req: Request, _res: Response, next: NextFunction): void => next();
 
-/** Límite para rutas de autenticación: 50 req / 15 min por IP */
+/** Límite para rutas de autenticación: 100 req / 15 min por IP */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiados intentos de autenticación, intenta de nuevo en 15 minutos.' },
