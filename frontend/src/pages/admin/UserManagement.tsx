@@ -5,7 +5,7 @@ import { User } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { Modal } from '../../components/UI/Modal';
 import { Badge, StatusBadge } from '../../components/UI/Badge';
-import { Search, Edit, Users as UsersIcon, MapPin, User as UserIcon, ClipboardList, Trash2, CheckCircle, XCircle, Loader, Eye, ArrowLeft } from 'lucide-react';
+import { Search, Edit, Users as UsersIcon, MapPin, User as UserIcon, ClipboardList, Trash2, CheckCircle, XCircle, Loader, Eye, ArrowLeft, Clock } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -14,7 +14,7 @@ import { es } from 'date-fns/locale';
 interface UserFormData { name: string; role: 'admin' | 'supervisor' | 'user'; area: string; is_active: boolean; }
 interface Attempt { id: string; exam_title: string; score: number; passed: boolean; status: string; submitted_at: string; created_at: string; }
 interface AnswerOption { id: string; option_text: string; is_correct: boolean; }
-interface Answer { id: string; question_text: string; question_type: string; is_correct: boolean; points_earned: number; max_points: number; feedback?: string; open_text_answer?: string; selected_option_ids?: string[]; options?: AnswerOption[]; }
+interface Answer { id: string; question_text: string; question_type: string; is_correct: boolean; points_earned: number; max_points: number; feedback?: string; open_text_answer?: string; selected_option_ids?: string[]; options?: AnswerOption[]; time_expired?: boolean; }
 
 const roleVariant = { admin: 'red', supervisor: 'blue', user: 'green' } as const;
 const roleLabel = { admin: 'SuperAdministrador', supervisor: 'Administrador', user: 'Colaborador' };
@@ -357,7 +357,9 @@ export const UserManagement = () => {
               <div className="space-y-3">
                 {detailAnswers.map((answer, i) => (
                   <div key={answer.id} className={`rounded-xl border p-4 ${
-                    answer.is_correct
+                    answer.time_expired
+                      ? 'border-amber-200 dark:border-amber-800 bg-amber-50/40 dark:bg-amber-900/10'
+                      : answer.is_correct
                       ? 'border-green-200 dark:border-green-800 bg-green-50/40 dark:bg-green-900/10'
                       : 'border-red-200 dark:border-red-800 bg-red-50/40 dark:bg-red-900/10'
                   }`}>
@@ -365,13 +367,20 @@ export const UserManagement = () => {
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 text-xs font-bold flex items-center justify-center text-gray-600 dark:text-gray-300">
                         {i + 1}
                       </span>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white flex-1">{answer.question_text}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{answer.question_text}</p>
+                        {answer.time_expired && (
+                          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700">
+                            <Clock size={10} /> Tiempo expirado — sin respuesta
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         {answer.is_correct
                           ? <CheckCircle size={16} className="text-green-600" />
-                          : <XCircle    size={16} className="text-red-500" />
+                          : <XCircle    size={16} className={answer.time_expired ? 'text-amber-500' : 'text-red-500'} />
                         }
-                        <span className={`text-xs font-bold ${answer.is_correct ? 'text-green-600' : 'text-red-500'}`}>
+                        <span className={`text-xs font-bold ${answer.is_correct ? 'text-green-600' : answer.time_expired ? 'text-amber-600' : 'text-red-500'}`}>
                           {answer.points_earned}/{answer.max_points}pts
                         </span>
                       </div>
