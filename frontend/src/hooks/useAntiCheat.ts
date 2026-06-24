@@ -98,32 +98,48 @@ export const useAntiCheat = ({ attemptId, onWarning, onAutoSubmit, enabled }: An
     };
   }, [enabled, logEvent, onWarning]);
 
-  // Fullscreen management
+  // Fullscreen management — omitido en móvil donde la API no está soportada
+  const fullscreenSupported =
+    typeof document !== 'undefined' &&
+    (!!document.documentElement.requestFullscreen ||
+      !!(document.documentElement as unknown as { webkitRequestFullscreen?: () => void }).webkitRequestFullscreen);
+
   const requestFullscreen = useCallback(() => {
-    document.documentElement.requestFullscreen().catch(() => {});
-  }, []);
+    if (!fullscreenSupported) return;
+    const el = document.documentElement as unknown as {
+      requestFullscreen?: () => Promise<void>;
+      webkitRequestFullscreen?: () => void;
+    };
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  }, [fullscreenSupported]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !fullscreenSupported) return;
 
     const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
+      const isFullscreen =
+        !!document.fullscreenElement ||
+        !!(document as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement;
+
+      if (!isFullscreen) {
         fullscreenExitCount.current++;
         logEvent('FULLSCREEN_EXIT', { count: fullscreenExitCount.current }, 'warning');
         onWarning('El modo pantalla completa es obligatorio. Por favor vuelve a pantalla completa.', 'warning');
-        // Re-enter fullscreen after a short delay
         setTimeout(requestFullscreen, 1500);
       }
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     requestFullscreen();
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     };
-  }, [enabled, logEvent, onWarning, requestFullscreen]);
+  }, [enabled, fullscreenSupported, logEvent, onWarning, requestFullscreen]);
 
   return { logEvent, requestFullscreen };
 };
