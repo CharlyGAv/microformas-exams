@@ -254,8 +254,8 @@ export const Dashboard = () => {
       </div>
 
       {/* ── Gráficas Row 1 ── */}
-      <div className="grid grid-cols-3 gap-5">
-        <div className="col-span-2 card p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="md:col-span-2 card p-5">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Resultados por Mes</h3>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={monthData}>
@@ -288,7 +288,7 @@ export const Dashboard = () => {
       </div>
 
       {/* ── Gráficas Row 2 ── */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="card p-5">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Promedio por Examen</h3>
           <ResponsiveContainer width="100%" height={220}>
@@ -316,7 +316,7 @@ export const Dashboard = () => {
       </div>
 
       {/* ── Cobertura y Gerente ── */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
         {/* Cobertura */}
         <div className="card p-5">
@@ -414,7 +414,7 @@ export const Dashboard = () => {
       </div>
 
       {/* ── Rankings ── */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="card p-5">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <TrendingUp size={18} className="text-green-500" /> Top Mejores Calificaciones

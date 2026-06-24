@@ -82,7 +82,7 @@ export const UserHome = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-3 mb-8">
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-gray-900 dark:text-white">{exams.length}</p>
           <p className="text-xs text-gray-500 mt-0.5">Exámenes disponibles</p>
@@ -121,7 +121,7 @@ export const UserHome = () => {
                 {available.map((exam) => {
                   const { label, variant, canStart } = getExamStatus(exam);
                   return (
-                    <div key={exam.id} className="card p-5 flex items-center gap-5 hover:shadow-md transition-shadow">
+                    <div key={exam.id} className="card p-4 sm:p-5 flex items-start sm:items-center gap-4 sm:gap-5 hover:shadow-md transition-shadow">
                       <div className="w-12 h-12 bg-brand-100 dark:bg-brand-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
                         <BookOpen size={22} className="text-brand-600 dark:text-brand-400" />
                       </div>
@@ -133,7 +133,7 @@ export const UserHome = () => {
                         {exam.description && (
                           <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{exam.description}</p>
                         )}
-                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs text-gray-400">
                           <span className="flex items-center gap-1"><Clock size={12} /> {exam.duration_minutes} minutos</span>
                           <span className="flex items-center gap-1"><Award size={12} /> Mínimo: {exam.passing_score}%</span>
                           <span className="flex items-center gap-1"><BookOpen size={12} /> {exam.question_count || 0} preguntas</span>
@@ -172,10 +172,10 @@ export const UserHome = () => {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Exámenes Completados</h2>
               <div className="space-y-3">
                 {completed.map((exam) => {
-                  const passed = exam.best_score != null && exam.best_score >= exam.passing_score;
+                  const passed = exam.best_score != null && parseFloat(String(exam.best_score)) >= parseFloat(String(exam.passing_score));
                   const canRetry = (exam.attempts_used || 0) < exam.max_attempts;
                   return (
-                    <div key={exam.id} className="card p-5 flex items-center gap-5">
+                    <div key={exam.id} className="card p-4 sm:p-5 flex items-start sm:items-center gap-4 sm:gap-5">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${passed ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
                         {passed ? <CheckCircle size={22} className="text-green-600" /> : <XCircle size={22} className="text-red-500" />}
                       </div>

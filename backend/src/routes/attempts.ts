@@ -193,15 +193,15 @@ router.post('/attempts/:id/submit', async (req: Request, res: Response) => {
     }
     const attemptData = attempt.rows[0];
 
-    // Calculate score
+    // Calculate score — total comes from ALL questions in the exam so unanswered
+    // questions count as 0 points earned and don't shrink the denominator.
     const scoreResult = await client.query(
       `SELECT
         COALESCE(SUM(ua.points_earned), 0) AS earned,
-        COALESCE(SUM(q.points), 0) AS total
+        (SELECT COALESCE(SUM(q.points), 0) FROM questions q WHERE q.exam_id = $2) AS total
        FROM user_answers ua
-       JOIN questions q ON ua.question_id = q.id
        WHERE ua.attempt_id = $1`,
-      [attemptId]
+      [attemptId, attemptData.exam_id]
     );
     const { earned, total } = scoreResult.rows[0];
     const score = total > 0 ? Math.round((parseFloat(earned) / parseFloat(total)) * 100 * 100) / 100 : 0;

@@ -264,7 +264,7 @@ export const ExamRoom = () => {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{exam?.title}</h2>
           {exam?.description && <p className="text-gray-500 mb-5">{exam.description}</p>}
 
-          <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
+          <div className="grid grid-cols-2 gap-3 mb-6 text-sm w-full">
             {[
               ['Duración', `${exam?.duration_minutes} minutos`],
               ['Preguntas', exam?.question_count || '—'],
@@ -329,8 +329,8 @@ export const ExamRoom = () => {
       )}
 
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3">
-        <div className="max-w-4xl mx-auto flex items-center gap-4">
+      <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-3 md:px-6 py-3">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 md:gap-4">
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">{exam?.title}</p>
             <div className="flex items-center gap-2 mt-1">
@@ -387,13 +387,13 @@ export const ExamRoom = () => {
       )}
 
       {/* Main content */}
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="grid grid-cols-4 gap-6">
+      <div className="max-w-4xl mx-auto p-3 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Question navigator */}
-          <div className="col-span-1">
-            <div className="card p-4 sticky top-24">
+          <div className="order-2 md:order-1 md:col-span-1">
+            <div className="card p-4 md:sticky md:top-24">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Preguntas</p>
-              <div className="grid grid-cols-4 gap-1.5">
+              <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-4">
                 {questions.map((q, i) => (
                   <button
                     key={q.id}
@@ -424,7 +424,7 @@ export const ExamRoom = () => {
           </div>
 
           {/* Question content */}
-          <div className="col-span-3">
+          <div className="order-1 md:order-2 md:col-span-3">
             {currentQuestion ? (
               <div className="card p-7">
                 <QuestionCard

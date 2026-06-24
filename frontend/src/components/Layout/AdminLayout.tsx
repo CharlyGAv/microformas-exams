@@ -21,9 +21,9 @@ const AdminContent = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Sidebar />
-      <div className={clsx('flex flex-col min-h-screen transition-all duration-300', collapsed ? 'ml-16' : 'ml-64')}>
+      <div className={clsx('flex flex-col min-h-screen transition-all duration-300', collapsed ? 'md:ml-16' : 'md:ml-64')}>
         <Topbar title={title} />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-3 md:p-6">
           <Outlet />
         </main>
       </div>

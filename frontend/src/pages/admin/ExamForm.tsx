@@ -112,7 +112,7 @@ export const ExamForm = () => {
             Programación
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="label">Fecha y hora de inicio *</label>
               <input type="datetime-local" {...register('start_datetime', { required: 'Requerido' })} className="input" />
@@ -135,7 +135,7 @@ export const ExamForm = () => {
             Configuración de Evaluación
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="label">Calificación mínima aprobatoria (%)</label>
               <input type="number" min={0} max={100} {...register('passing_score')} className="input" />
@@ -164,7 +164,7 @@ export const ExamForm = () => {
           </div>
         </div>
 
-        <div className="flex gap-3 justify-end">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
           <button type="button" className="btn-secondary" onClick={() => navigate('/admin/exams')}>
             Cancelar
           </button>

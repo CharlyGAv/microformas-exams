@@ -1,6 +1,7 @@
-import { Sun, Moon, Bell } from 'lucide-react';
+import { Sun, Moon, Bell, Menu } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSidebar } from '../../contexts/SidebarContext';
 import { Badge } from '../UI/Badge';
 
 interface TopbarProps {
@@ -13,13 +14,21 @@ const roleVariant = { admin: 'red', supervisor: 'blue', user: 'green' } as const
 export const Topbar = ({ title }: TopbarProps) => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { setMobileOpen } = useSidebar();
 
   return (
-    <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-6 sticky top-0 z-30">
-      <div>
-        {title && <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h1>}
-      </div>
+    <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">
       <div className="flex items-center gap-3">
+        {/* Hamburger — mobile only */}
+        <button
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+          onClick={() => setMobileOpen(true)}
+        >
+          <Menu size={20} />
+        </button>
+        {title && <h1 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h1>}
+      </div>
+      <div className="flex items-center gap-2 md:gap-3">
         <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors">
           {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
         </button>
@@ -28,7 +37,7 @@ export const Topbar = ({ title }: TopbarProps) => {
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
         </button>
         {user && (
-          <div className="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 pl-2 md:pl-3 border-l border-gray-200 dark:border-gray-700">
             {user.avatar_url ? (
               <img src={user.avatar_url} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
             ) : (

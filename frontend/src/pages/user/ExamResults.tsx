@@ -84,7 +84,7 @@ export const ExamResults = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
           { icon: CheckCircle, label: 'Correctas', value: correct, color: 'text-green-600' },
           { icon: XCircle, label: 'Incorrectas', value: incorrect, color: 'text-red-500' },

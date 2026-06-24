@@ -57,7 +57,7 @@ export const LiveMonitor = () => {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="page-title">Monitor en Tiempo Real</h1>
           <p className="text-gray-500 text-sm mt-1">Actualización automática cada 15 segundos</p>
@@ -75,9 +75,9 @@ export const LiveMonitor = () => {
         <StatsCard title="Total Sesiones" value={sessions.length} icon={<Activity size={20} />} color="purple" />
       </div>
 
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Sessions grid */}
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           {/* Filter tabs */}
           <div className="flex gap-2 mb-4 flex-wrap">
             {[

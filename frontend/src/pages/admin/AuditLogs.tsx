@@ -59,7 +59,7 @@ export const AuditLogs = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-[320px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-5 items-start">
 
         {/* ── Panel izquierdo: lista de usuarios ── */}
         <div className="card overflow-hidden">
@@ -135,7 +135,7 @@ export const AuditLogs = () => {
           ) : (
             <>
               {/* Header del usuario seleccionado */}
-              <div className="card p-4 flex items-center gap-4">
+              <div className="card p-4 flex flex-wrap items-center gap-4">
                 {selectedUser.avatar_url ? (
                   <img src={selectedUser.avatar_url} alt={selectedUser.name}
                     className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
@@ -148,7 +148,7 @@ export const AuditLogs = () => {
                   <h2 className="font-semibold text-gray-900 dark:text-white">{selectedUser.name}</h2>
                   <p className="text-xs text-gray-500">{selectedUser.email}</p>
                 </div>
-                <div className="flex gap-3 text-center">
+                <div className="flex gap-3 text-center flex-shrink-0">
                   <div>
                     <p className="text-lg font-bold text-gray-900 dark:text-white">{selectedUser.total_events}</p>
                     <p className="text-[10px] text-gray-400">Total</p>

@@ -140,7 +140,7 @@ export const ExamList = () => {
           })}
 
           {exams.length === 0 && (
-            <div className="col-span-3 text-center py-16">
+            <div className="col-span-full text-center py-16">
               <BookOpen size={48} className="text-gray-300 dark:text-gray-700 mx-auto mb-4" />
               <p className="text-gray-500">No hay exámenes registrados</p>
               <button className="btn-primary mt-4" onClick={() => navigate('/admin/exams/new')}>

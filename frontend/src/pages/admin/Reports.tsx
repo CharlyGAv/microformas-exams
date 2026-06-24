@@ -160,12 +160,12 @@ export const Reports = () => {
 
   return (
     <div className="animate-fade-in space-y-5">
-      <div className="page-header">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="page-title">Reportes y Análisis</h1>
           <p className="text-gray-500 text-sm mt-1">Exporta datos en múltiples formatos</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button onClick={() => handleExport('xlsx')} className="btn-primary">
             <Table size={16} /> Exportar Excel
           </button>
@@ -424,7 +424,7 @@ export const Reports = () => {
               const totalMax     = detailAnswers.reduce((s, a) => s + (parseFloat(String(a.max_points))    || 0), 0);
               const correctCount = detailAnswers.filter((a) => a.is_correct).length;
               return (
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { label: 'Calificación', value: `${parseFloat(String(detailAttempt.score || 0)).toFixed(1)}%`,  color: detailAttempt.passed ? 'text-green-600' : 'text-red-500' },
                     { label: 'Puntos',       value: `${totalEarned % 1 === 0 ? totalEarned : totalEarned.toFixed(1)} / ${totalMax % 1 === 0 ? totalMax : totalMax.toFixed(1)}`, color: detailAttempt.passed ? 'text-green-600' : 'text-red-500' },
